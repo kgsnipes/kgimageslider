@@ -1,109 +1,118 @@
-(function( $ ){
+//this is a utility to have Object.create() work on browsers that do not support
+if(typeof Object.create !=='function'){
+	Object.create=function(obj){
+		function F(){};
+		f.prototype=obj;
+		return new F();
+	};
+}
 
-var sliderOptions;
-var _this;
-var methods = {
-	init : function(options){
-		 
-		sliderOptions=jQuery.extend({width:100,transitionInterval:2000,idleInterval:1000,height:100,count:1,processing:false,renderSmoothEdges:true,border:'1px solid #ccc'},options);
 
-		return this.each(function(){
-			
-			$this=$(this);
-			
-			$this.css({
-			'width':sliderOptions.width+'px',
-			'height':sliderOptions.height+'px',
+
+(function( $ ,window, document,undefined){
+
+var kgImageSlider={
+
+	init:function(options,elem){
+
+		var self=this;
+		self.$elem=$(elem);
+		self.options=$.extend({},$.fn.kgimageslider.options,options);
+		
+
+		self.$elem.css({
+			'width':self.options.width+'px',
+			'height':self.options.height+'px',
 			'overflow':'hidden',
-			'border':sliderOptions.border,
+			'border':self.options.border,
 			
 			});
 			
 			
 			
-			$this.children("ul.slider").css({
-			'width':sliderOptions.width*$this.children("ul.slider").children("li").length+'px',
-			'height':sliderOptions.height+'px',
+			self.$elem.children("ul.slider").css({
+			'width':self.options.width*self.$elem.children("ul.slider").children("li").length+'px',
+			'height':self.options.height+'px',
 			'padding':'0px',
 			'margin':'0px',
 			'list-style':'none'
 			});
 			
-			$this.children("ul.slider").children("li").css({
+			self.$elem.children("ul.slider").children("li").css({
 			'float':'left'
 			});
 			
-			$this.children("ul.slider").children("li").children().css({
-			'width':sliderOptions.width+'px',
-			'height':sliderOptions.height+'px'
+			self.$elem.children("ul.slider").children("li").children().css({
+			'width':self.options.width+'px',
+			'height':self.options.height+'px'
 			});
 			
 			
-			$("<a id=\"prevBtn\" style=\"background-color:white;color:black;padding:10px;float:left;cursor:pointer;display:none;\">&lt;</a><a id=\"nextBtn\" style=\"background-color:white;color:black;padding:10px;float:right;cursor:pointer;display:none;\">&gt;</a>").appendTo($this);
+			$("<a id=\"prevBtn\" style=\"background-color:white;color:black;padding:10px;float:left;cursor:pointer;display:none;\">&lt;</a><a id=\"nextBtn\" style=\"background-color:white;color:black;padding:10px;float:right;cursor:pointer;display:none;\">&gt;</a>").appendTo(self.$elem);
 			
-			if(!methods.isMobileBrowser())
+			if(!self.isMobileBrowser())
 			{
-			$this.children("#prevBtn").css({'margin-left':'-100px'});
-			$this.children("#nextBtn").css({'margin-right':'-100px'});
+			self.$elem.children("#prevBtn").css({'margin-left':'-100px'});
+			self.$elem.children("#nextBtn").css({'margin-right':'-100px'});
 			}
 			
-			$this.children("#prevBtn").show();
-			$this.children("#nextBtn").show();
+			self.$elem.children("#prevBtn").show();
+			self.$elem.children("#nextBtn").show();
 			
-			$this.children("#prevBtn").css({'margin-top':'-'+(($this.height()/2)+$this.children("#prevBtn").height())+'px'});
+			self.$elem.children("#prevBtn").css({'margin-top':'-'+((self.$elem.height()/2)+self.$elem.children("#prevBtn").height())+'px'});
 			
-			$this.children("#prevBtn").click(function(){
+			self.$elem.children("#prevBtn").click(function(){
 			
-				if(!sliderOptions.processing)
+				if(!self.options.processing)
 				{
-					sliderOptions.processing=true;
-			 		sliderOptions.count=0;
-			 		methods.animateSlideRight();
+					self.options.processing=true;
+			 		self.options.count=0;
+			 		self.animateSlideRight();
 				}
 			});
-			$this.children("#nextBtn").css({'margin-top':'-'+(($this.height()/2)+$this.children("#nextBtn").height())+'px'});
-			$this.children("#nextBtn").click(function(){
+			self.$elem.children("#nextBtn").css({'margin-top':'-'+((self.$elem.height()/2)+self.$elem.children("#nextBtn").height())+'px'});
+			self.$elem.children("#nextBtn").click(function(){
 			
-				if(!sliderOptions.processing)
+				if(!self.options.processing)
 				{
-					sliderOptions.processing=true;
-					sliderOptions.count=0;
-			 		methods.animateSlideLeft();
+					self.options.processing=true;
+					self.options.count=0;
+			 		self.animateSlideLeft();
 			 	}
 			
 			});
 			
 			
-			if(($.browser.webkit || $.browser.mozilla) && sliderOptions.renderSmoothEdges)
+			if(($.browser.webkit || $.browser.mozilla) && self.options.renderSmoothEdges)
 			{
-				$this.css({'border-radius':'20px'});
-				$this.children("#nextBtn").css({'border-top-left-radius':'10px','border-bottom-left-radius':'10px'});
-				$this.children("#prevBtn").css({'border-top-right-radius':'10px','border-bottom-right-radius':'10px'});
+				self.$elem.css({'border-radius':'20px'});
+				self.$elem.children("#nextBtn").css({'border-top-left-radius':'10px','border-bottom-left-radius':'10px'});
+				self.$elem.children("#prevBtn").css({'border-top-right-radius':'10px','border-bottom-right-radius':'10px'});
 			}
 			
 			
 			
 			
-			$this.mouseenter(function(){
-			if(!methods.isMobileBrowser())
+			self.$elem.mouseenter(function(){
+			if(!self.isMobileBrowser())
 			{
-			$this.children("#prevBtn").animate({'margin-left':'0px'},500);
-			$this.children("#nextBtn").animate({'margin-right':'0px'},500);
+			self.$elem.children("#prevBtn").animate({'margin-left':'0px'},500);
+			self.$elem.children("#nextBtn").animate({'margin-right':'0px'},500);
 			}
 			
 			}).mouseleave(function(){
 			
-			if(!methods.isMobileBrowser())
+			if(!self.isMobileBrowser())
 			{
-			$this.children("#prevBtn").animate({'margin-left':'-100px'},500);
-			$this.children("#nextBtn").animate({'margin-right':'-100px'},500);
+			self.$elem.children("#prevBtn").animate({'margin-left':'-100px'},500);
+			self.$elem.children("#nextBtn").animate({'margin-right':'-100px'},500);
 			
 			
-			if(sliderOptions.count==0)
+			if(self.options.count==0)
 			{
-    		sliderOptions.count=1;
+    		self.options.count=1;
     	
-			methods.animateSlideLeft();
+			self.animateSlideLeft();
 			}
 			
 			}
@@ -112,56 +121,54 @@ var methods = {
 			});
 			
 			
-			$this.click(function(){
 			
-			});
 			//methods['animateSlide'].apply(this,arguments);
 			
 			setTimeout(function(){
     	
-    	if(sliderOptions.count==1)
-			methods.animateSlideLeft();
-			},sliderOptions.idleInterval);
+    	if(self.options.count==1)
+			self.animateSlideLeft();
+			},self.options.idleInterval);
 			
-		});
-		
-		
+	
 
-     },
-    animateSlideLeft:function() { 
-    
-    $this.children("ul.slider").animate({'margin-left':'-='+sliderOptions.width+'px'},sliderOptions.transitionInterval,function(){
-    $("<li></li>").appendTo($(this));
-    $(this).children().last().css({'float':'left'});
-    $($($(this).children("li")[0]).children()).appendTo($(this).children().last());
-    $($(this).children("li")[0]).remove();
-    $(this).css({'margin-left':'0px'});
-    sliderOptions.processing=false;
+
+
+
+	},
+	animateSlideLeft:function() { 
+    	
+    	var self=this;
+    self.$elem.children("ul.slider").animate({'margin-left':'-='+self.options.width+'px'},self.options.transitionInterval,function(){
+    $("<li></li>").appendTo(self.$elem.children("ul.slider"));
+    self.$elem.children("ul.slider").children().last().css({'float':'left'});
+    $($(self.$elem.children("ul.slider").children("li")[0]).children()).appendTo($(this).children().last());
+    $(self.$elem.children("ul.slider").children("li")[0]).remove();
+    self.$elem.children("ul.slider").css({'margin-left':'0px'});
+    self.options.processing=false;
     
     	setTimeout(function(){
     	
-    	if(sliderOptions.count==1)
-    		methods.animateSlideLeft();
+    	if(self.options.count==1)
+    		self.animateSlideLeft();
     	
     	
-    	},sliderOptions.idleInterval);
+    	},self.options.idleInterval);
     
     });
       
-    
-    
-   
-
-    	
+ 	
     },
     animateSlideRight:function() { 
     
-    $("<li></li>").insertBefore($($this.children("ul.slider").children("li")[0]));
-    $($this.children("ul.slider").children("li").last().children()).appendTo($this.children("ul.slider").children().first());
-    $this.children("ul.slider").children("li").first().css({'float':'left'});
-    $this.children("ul.slider").children("li").last().remove();
-    $this.children("ul.slider").css({'margin-left':'-'+$this.width()+'px'});
-    $this.children("ul.slider").animate({'margin-left':'0px'},sliderOptions.transitionInterval,function(){sliderOptions.processing=false;});	
+    var self=this;
+
+    $("<li></li>").insertBefore(self.$elem.children("ul.slider").children("li").first());
+    $(self.$elem.children("ul.slider").children("li").last().children()).appendTo(self.$elem.children("ul.slider").children("li").first());
+    self.$elem.children("ul.slider").children("li").first().css({'float':'left'});
+    self.$elem.children("ul.slider").children("li").last().remove();
+    self.$elem.children("ul.slider").css({'margin-left':'-'+self.options.width+'px'});
+    self.$elem.children("ul.slider").animate({'margin-left':'0px'},self.options.transitionInterval,function(){self.options.processing=false;});	
     },
     isMobileBrowser:function() {
     	
@@ -170,25 +177,35 @@ var methods = {
     		return true;
     		else
     		return false;
-    
-    
+
     }
+
 };
 
-$.fn.kgimageslider = function( method ) {
+
+$.fn.kgimageslider = function( options ) {
     
-    if ( methods[method] ) {
-      return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
-    } else if ( typeof method === 'object' || ! method ) {
-      return methods.init.apply( this, arguments );
-    } else {
-      $.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
-    }    
+    return this.each(function(){
+
+    	var slider=Object.create(kgImageSlider);
+    	console.log(slider);
+    	slider.init(options,this);
+    });
   
-  };
+ };
 
+$.fn.kgimageslider.options={
+width:100,
+transitionInterval:2000,
+idleInterval:1000,
+height:100,
+count:1,
+processing:false,
+renderSmoothEdges:true,
+border:'1px solid #ccc'
+};
 
-})( jQuery );
+})( jQuery ,window,document);
 
 		
 		
