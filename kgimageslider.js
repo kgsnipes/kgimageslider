@@ -201,7 +201,7 @@ $.fn.kgimageslider = function( options ) {
     return this.each(function(){
 
     	var slider=Object.create(kgImageSlider);
-    	console.log(slider);
+    	//console.log(slider);
     	slider.init(options,this);
     });
   
