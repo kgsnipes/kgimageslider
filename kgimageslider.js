@@ -83,11 +83,15 @@ var kgImageSlider={
 			});
 			
 			
-			if(($.browser.webkit || $.browser.mozilla) && self.options.renderSmoothEdges)
+			if( self.options.renderSmoothEdges)
 			{
-				self.$elem.css({'border-radius':'20px'});
-				self.$elem.children("#nextBtn").css({'border-top-left-radius':'10px','border-bottom-left-radius':'10px'});
-				self.$elem.children("#prevBtn").css({'border-top-right-radius':'10px','border-bottom-right-radius':'10px'});
+				if(($.browser.webkit || $.browser.mozilla))
+				{
+					self.$elem.css({'border-radius':'20px'});
+					self.$elem.children("#nextBtn").css({'border-top-left-radius':'10px','border-bottom-left-radius':'10px'});
+					self.$elem.children("#prevBtn").css({'border-top-right-radius':'10px','border-bottom-right-radius':'10px'});
+				}
+				
 			}
 			
 			
@@ -214,7 +218,7 @@ idleInterval:1000,
 height:100,
 count:1,
 processing:false,
-renderSmoothEdges:true,
+renderSmoothEdges:false,
 border:'1px solid #ccc',
 onTransition:null
 };
