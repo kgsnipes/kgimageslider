@@ -12,12 +12,20 @@ if(typeof Object.create !=='function'){
 (function( $ ,window, document,undefined){
 
 var kgImageSlider={
-
-	init:function(options,elem){
-
+	init:function (options,elem) {
 		var self=this;
 		self.$elem=$(elem);
 		self.options=$.extend({},$.fn.kgimageslider.options,options);
+		if(self.options.type=='sliding')
+		{
+			self.initSliding();
+		}
+	},
+	initSliding:function(){
+
+		var self=this;
+		//self.$elem=$(elem);
+		//self.options=$.extend({},$.fn.kgimageslider.options,options);
 		
 
 		self.$elem.css({
@@ -76,21 +84,23 @@ var kgImageSlider={
 
 		    }
 			
-			
-			$("<a id=\"prevBtn\" style=\"background-color:white;color:black;padding:10px;float:left;cursor:pointer;display:none;\">&lt;</a><a id=\"nextBtn\" style=\"background-color:white;color:black;padding:10px;float:right;cursor:pointer;display:none;\">&gt;</a>").insertBefore(self.$elem.children("ul.slider_description"));
-			
+			if(self.options.enableDescription)
+				$("<a class=\"prevBtn\" style=\"background-color:white;color:black;padding:10px;float:left;cursor:pointer;display:none;\">&lt;</a><a class=\"nextBtn\" style=\"background-color:white;color:black;padding:10px;float:right;cursor:pointer;display:none;\">&gt;</a>").insertBefore(self.$elem.children("ul.slider_description"));
+			else
+				$("<a class=\"prevBtn\" style=\"background-color:white;color:black;padding:10px;float:left;cursor:pointer;display:none;\">&lt;</a><a class=\"nextBtn\" style=\"background-color:white;color:black;padding:10px;float:right;cursor:pointer;display:none;\">&gt;</a>").appendTo(self.$elem);
+				
 			if(!self.isMobileBrowser())
 			{
-			self.$elem.children("#prevBtn").css({'margin-left':'-100px'});
-			self.$elem.children("#nextBtn").css({'margin-right':'-100px'});
+			self.$elem.children(".prevBtn").css({'margin-left':'-100px'});
+			self.$elem.children(".nextBtn").css({'margin-right':'-100px'});
 			}
 			
-			self.$elem.children("#prevBtn").show();
-			self.$elem.children("#nextBtn").show();
+			self.$elem.children(".prevBtn").show();
+			self.$elem.children(".nextBtn").show();
 			
-			self.$elem.children("#prevBtn").css({'margin-top':'-'+((self.$elem.height()/2)+self.$elem.children("#prevBtn").height())+'px'});
+			self.$elem.children(".prevBtn").css({'margin-top':'-'+((self.$elem.height()/2)+self.$elem.children(".prevBtn").height())+'px'});
 			
-			self.$elem.children("#prevBtn").click(function(){
+			self.$elem.children(".prevBtn").click(function(){
 				clearTimeout(self.options.timeout);
 				if(!self.options.processing)
 				{
@@ -99,8 +109,8 @@ var kgImageSlider={
 			 		self.animateSlideRight();
 				}
 			});
-			self.$elem.children("#nextBtn").css({'margin-top':'-'+((self.$elem.height()/2)+self.$elem.children("#nextBtn").height())+'px'});
-			self.$elem.children("#nextBtn").click(function(){
+			self.$elem.children(".nextBtn").css({'margin-top':'-'+((self.$elem.height()/2)+self.$elem.children(".nextBtn").height())+'px'});
+			self.$elem.children(".nextBtn").click(function(){
 			
 				clearTimeout(self.options.timeout);
 				if(!self.options.processing)
@@ -118,8 +128,8 @@ var kgImageSlider={
 				if(($.browser.webkit || $.browser.mozilla))
 				{
 					self.$elem.css({'border-radius':'20px'});
-					self.$elem.children("#nextBtn").css({'border-top-left-radius':'10px','border-bottom-left-radius':'10px'});
-					self.$elem.children("#prevBtn").css({'border-top-right-radius':'10px','border-bottom-right-radius':'10px'});
+					self.$elem.children(".nextBtn").css({'border-top-left-radius':'10px','border-bottom-left-radius':'10px'});
+					self.$elem.children(".prevBtn").css({'border-top-right-radius':'10px','border-bottom-right-radius':'10px'});
 				}
 				
 			}
@@ -132,16 +142,16 @@ var kgImageSlider={
 				self.options.count=0;
 			if(!self.isMobileBrowser())
 			{
-			self.$elem.children("#prevBtn").animate({'margin-left':'0px'},500);
-			self.$elem.children("#nextBtn").animate({'margin-right':'0px'},500);
+			self.$elem.children(".prevBtn").animate({'margin-left':'0px'},500);
+			self.$elem.children(".nextBtn").animate({'margin-right':'0px'},500);
 			}
 			
 			}).mouseleave(function(){
 			
 			if(!self.isMobileBrowser())
 			{
-			self.$elem.children("#prevBtn").animate({'margin-left':'-100px'},500);
-			self.$elem.children("#nextBtn").animate({'margin-right':'-100px'},500);
+			self.$elem.children(".prevBtn").animate({'margin-left':'-100px'},500);
+			self.$elem.children(".nextBtn").animate({'margin-right':'-100px'},500);
 			
 			}
 			
@@ -316,7 +326,8 @@ border:'1px solid #ccc',
 descriptionBackground:'#888',
 descriptionColor:'#fff',
 enableDescription:false,
-timeout:null,
+timeout:null,//this is used internally
+type:'sliding',
 onTransition:null
 };
 
